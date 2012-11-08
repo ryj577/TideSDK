@@ -82,6 +82,7 @@ class App(object):
             elif key == u'#url': self.url = value
             elif key == u'#version': self.version = value
             elif key == u'#loglevel': self.loglevel = value
+            elif key == u'#distributionurl': self.distributionurl = value
             elif key == u'#stream': self.stream = value
             elif key.find(u'#') == 0: continue
             else:
@@ -116,6 +117,7 @@ class App(object):
         self.get_tiapp_element_as_prop('publisher', 'publisher')
         self.get_tiapp_element_as_prop('url', 'url')
         self.get_tiapp_element_as_prop('log-level', 'loglevel')
+        self.get_tiapp_element_as_prop('distribution-url', 'distributionurl')
         self.get_tiapp_element_as_prop('stream', 'stream')
 
     def write_manifest(self, path):
@@ -138,6 +140,8 @@ class App(object):
             write_line(u'#url: ' + self.url)
         if hasattr(self, 'loglevel'):
             write_line(u'#loglevel: ' + self.loglevel)
+        if hasattr(self, 'distributionurl'):
+            write_line(u'#distributionurl: ' + self.distributionurl)
         if hasattr(self, 'stream'):
             write_line(u'#stream: ' + self.stream)
 
