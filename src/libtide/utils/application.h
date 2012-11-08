@@ -60,6 +60,7 @@ namespace UTILS_NS
         string publisher;
         string url;
         string image;
+        string distributionUrl;
         string stream;
         string logLevel;
         vector<SharedDependency> dependencies;

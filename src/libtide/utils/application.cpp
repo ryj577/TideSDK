@@ -123,6 +123,11 @@ namespace UTILS_NS
                 this->version = value;
                 continue;
             }
+            else if (key == "#distributionurl")
+            {
+                this->distributionUrl = value;
+                continue;
+            }
             else if (key == "#stream")
             {
                 this->stream = value;
@@ -151,8 +156,11 @@ namespace UTILS_NS
     Application::Application(string path, string manifestPath) :
         path(path),
         manifestPath(manifestPath),
+        distributionUrl(STRING(_DISTRIBUTION_URL)),
         stream("production")
     {
+        // Default distributionUrl is set in SConstruct and doesn't have to be
+        // in the manifest unless switching between default and custom distribution urls
         // Default stream is production and is optional and doesn't have to be 
         // in the manifest unless switching from production to test or dev
     }
@@ -297,7 +305,8 @@ namespace UTILS_NS
         else
         {
             url = scheme;
-            url.append("://"STRING(_DISTRIBUTION_URL));
+            url.append("://");
+            url.append(this->distributionUrl);
             if (stream == "production" || stream == "p")
             {
                 url.append("/p");
