@@ -4,7 +4,7 @@ This particular branch of TideSDK
 ...allows you to set:
 
 ```
-<distribution-url>api.example.com</distribution-url>
+<distribution-url>api.example.com/my-tidesdk-endpoint</distribution-url>
 ```
 
 in your tiapp.xml
@@ -12,17 +12,22 @@ in your tiapp.xml
 This will replace api.appcelerator.net in service requests (app updates, network installation, analytics etc), and is meant to ease experimentation with custom endpoints.
 
 Note that the complete request urls currently are:
+
 `http(s)://distribution-url/p/v1/resource-method`
+
+That is, legacy Appcelerator code will add http or https depending on what kind of request is being made, and append `/p/v1/` before added the actual resource and method.
 
 For instance:
 
 `http://api.appcelerator.net/p/v1/release-list`
 
-becomes
+...becomes:
 
-`http://api.example.com/p/v1/release-list`
+`http://api.example.com/my-tidesdk-endpoint/p/v1/release-list`
 
-Otherwise, this branch follows TideSDK master and develop branches precisely, until the services handling is rewritten in TideSDK, allowing for more decent services configuration (after all, this branch is based on but [a temporary hack](https://github.com/TideSDK/TideSDK/pull/50)).
+...with the setting in tiapp.xml from above.
+
+In all other aspects, this branch follows TideSDK master and develop branches precisely, until the services handling is rewritten in TideSDK, allowing for more decent services configuration (after all, this branch is based on but [a temporary hack](https://github.com/TideSDK/TideSDK/pull/50)).
 
 TideSDK
 =======
