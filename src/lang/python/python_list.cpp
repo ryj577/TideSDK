@@ -32,12 +32,12 @@
 * limitations under the License.
 **/
 
-#include "k_python_list.h"
+#include "python_list.h"
 
 namespace tide
 {
     KPythonList::KPythonList(PyObject *list) :
-        KList("Python.KPythonList"),
+        TiList("Python.KPythonList"),
         list(list),
         object(new KPythonObject(list, true))
     {
@@ -86,7 +86,7 @@ namespace tide
         if (index >= 0 && index < this->Size())
         {
             PyObject *p = PyList_GetItem(this->list, index);
-            KValueRef v = PythonUtils::ToKrollValue(p);
+            KValueRef v = PythonUtils::ToTiValue(p);
             return v;
         }
         else
@@ -97,9 +97,9 @@ namespace tide
 
     void KPythonList::Set(const char* name, KValueRef value)
     {
-        if (KList::IsInt(name))
+        if (TiList::IsInt(name))
         {
-            this->SetAt(KList::ToIndex(name), value);
+            this->SetAt(TiList::ToIndex(name), value);
         }
         else
         {
@@ -124,9 +124,9 @@ namespace tide
 
     KValueRef KPythonList::Get(const char* name)
     {
-        if (KList::IsInt(name))
+        if (TiList::IsInt(name))
         {
-            return this->At(KList::ToIndex(name));
+            return this->At(TiList::ToIndex(name));
         }
         else
         {
@@ -139,7 +139,7 @@ namespace tide
         SharedStringList property_names = object->GetPropertyNames();
         for (size_t i = 0; i < this->Size(); i++)
         {
-            std::string name = KList::IntToChars(i);
+            std::string name = TiList::IntToChars(i);
             property_names->push_back(new std::string(name));
         }
 
@@ -151,7 +151,7 @@ namespace tide
         return this->object->ToPython();
     }
 
-    bool KPythonList::Equals(KObjectRef other)
+    bool KPythonList::Equals(TiObjectRef other)
     {
         AutoPtr<KPythonList> pyOther = other.cast<KPythonList>();
 

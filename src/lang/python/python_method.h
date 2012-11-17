@@ -32,31 +32,31 @@
 * limitations under the License.
 **/
 
-#ifndef _K_PHP_FUNCTION_H_
-#define _K_PHP_FUNCTION_H_
+#ifndef _PYTHON_METHOD_H_
+#define _PYTHON_METHOD_H_
+
+#include "python_module.h"
 
 namespace tide
 {
-    class KPHPFunction : public KMethod
+    class KPythonObject;
+    class KPythonMethod : public TiMethod
     {
-        public:
-        KPHPFunction(const char *functionName);
+    public:
+        KPythonMethod(PyObject *obj);
+        virtual ~KPythonMethod();
 
-        virtual ~KPHPFunction();
         KValueRef Call(const ValueList& args);
         virtual void Set(const char *name, KValueRef value);
         virtual KValueRef Get(const char *name);
+        virtual bool Equals(TiObjectRef);
         virtual SharedStringList GetPropertyNames();
-        virtual SharedString DisplayString(int);
-        virtual bool Equals(KObjectRef);
-        bool PropertyExists(const char* property);
+        PyObject* ToPython();
 
-        inline std::string& GetMethodName() { return methodName; }
-
-        private:
-        std::string methodName;
-        zval* zMethodName;
-        KObjectRef globalObject;
+    private:
+        PyObject* method;
+        AutoPtr<KPythonObject> object;
+        DISALLOW_EVIL_CONSTRUCTORS(KPythonMethod);
     };
 }
 

@@ -32,12 +32,12 @@
 * limitations under the License.
 **/
 
-#include "k_python_object.h"
+#include "python_object.h"
 
 namespace tide
 {
     KPythonObject::KPythonObject(PyObject *obj) :
-        KObject("Python.KPythonObject"),
+        TiObject("Python.KPythonObject"),
         object(obj),
         readOnly(false),
         delegate(NULL)
@@ -113,12 +113,12 @@ namespace tide
             THROW_PYTHON_EXCEPTION
         }
 
-        KValueRef kroll_value = PythonUtils::ToKrollValue(value);
+        KValueRef tide_value = PythonUtils::ToTiValue(value);
         Py_DECREF(value);
-        return kroll_value;
+        return tide_value;
     }
 
-    bool KPythonObject::Equals(KObjectRef other)
+    bool KPythonObject::Equals(TiObjectRef other)
     {
         AutoPtr<KPythonObject> pyOther = other.cast<KPythonObject>();
 

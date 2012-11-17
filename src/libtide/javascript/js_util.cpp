@@ -76,10 +76,10 @@ namespace JSUtil
     static JSValueRef GetFunctionPrototype(JSContextRef jsContext, JSValueRef* exception);
     static JSValueRef GetArrayPrototype(JSContextRef jsContext, JSValueRef* exception);
 
-    KValueRef ToKrollValue(JSValueRef value, JSContextRef jsContext,
+    KValueRef ToTiValue(JSValueRef value, JSContextRef jsContext,
         JSObjectRef thisObject)
     {
-        KValueRef krollValue = 0;
+        KValueRef tideValue = 0;
         JSValueRef exception = NULL;
 
         if (value == NULL)
@@ -90,11 +90,11 @@ namespace JSUtil
 
         if (JSValueIsNumber(jsContext, value))
         {
-            krollValue = Value::NewDouble(JSValueToNumber(jsContext, value, &exception));
+            tideValue = Value::NewDouble(JSValueToNumber(jsContext, value, &exception));
         }
         else if (JSValueIsBoolean(jsContext, value))
         {
-            krollValue = Value::NewBool(JSValueToBoolean(jsContext, value));
+            tideValue = Value::NewBool(JSValueToBoolean(jsContext, value));
         }
         else if (JSValueIsString(jsContext, value))
         {
@@ -103,7 +103,7 @@ namespace JSUtil
             {
                 std::string stringValue(ToChars(jsString));
                 JSStringRelease(jsString);
-                krollValue = Value::NewString(stringValue);
+                tideValue = Value::NewString(stringValue);
             }
         }
         else if (JSValueIsObject(jsContext, value))
@@ -114,49 +114,49 @@ namespace JSUtil
                 KValueRef* value = static_cast<KValueRef*>(JSObjectGetPrivate(o));
                 if (value != NULL)
                 {
-                    // This is a KJS-wrapped Kroll value: unwrap it
+                    // This is a KJS-wrapped TideSDK value: unwrap it
                     return *value;
                 }
                 else if (JSObjectIsFunction(jsContext, o))
                 {
                     // this is a pure JS method: proxy it
-                    KMethodRef tibm = new KKJSMethod(jsContext, o, thisObject);
-                    krollValue = Value::NewMethod(tibm);
+                    TiMethodRef tibm = new KKJSMethod(jsContext, o, thisObject);
+                    tideValue = Value::NewMethod(tibm);
                 }
                 else if (IsArrayLike(o, jsContext))
                 {
                     // this is a pure JS array: proxy it
-                    KListRef tibl = new KKJSList(jsContext, o);
-                    krollValue = Value::NewList(tibl);
+                    TiListRef tibl = new KKJSList(jsContext, o);
+                    tideValue = Value::NewList(tibl);
                 }
                 else
                 {
                     // this is a pure JS object: proxy it
-                    KObjectRef tibo = new KKJSObject(jsContext, o);
-                    krollValue = Value::NewObject(tibo);
+                    TiObjectRef tibo = new KKJSObject(jsContext, o);
+                    tideValue = Value::NewObject(tibo);
                 }
             }
         }
         else if (JSValueIsNull(jsContext, value))
         {
-            krollValue = tide::Value::Null;
+            tideValue = tide::Value::Null;
         }
         else
         {
-            krollValue = tide::Value::Undefined;
+            tideValue = tide::Value::Undefined;
         }
-        if (!krollValue.isNull() && exception == NULL)
+        if (!tideValue.isNull() && exception == NULL)
         {
-            return krollValue;
+            return tideValue;
         }
         else if (exception != NULL)
         {
-            throw ToKrollValue(exception, jsContext, NULL);
+            throw ToTiValue(exception, jsContext, NULL);
         }
         else
         {
-            GetLogger()->Error("Failed Kroll->JS conversion with no exception!");
-            throw ValueException::FromString("Conversion from Kroll value to JS value failed");
+            GetLogger()->Error("Failed Tide->JS conversion with no exception!");
+            throw ValueException::FromString("Conversion from Tide value to JS value failed");
         }
     }
 
@@ -183,7 +183,7 @@ namespace JSUtil
         }
         else if (value->IsObject())
         {
-            KObjectRef obj = value->ToObject();
+            TiObjectRef obj = value->ToObject();
             AutoPtr<KKJSObject> kobj = obj.cast<KKJSObject>();
             if (!kobj.isNull() && kobj->SameContextGroup(jsContext))
             {
@@ -192,13 +192,13 @@ namespace JSUtil
             }
             else
             {
-                // this is a KObject that needs to be proxied
-                jsValue = KObjectToJSValue(value, jsContext);
+                // this is a TiObject that needs to be proxied
+                jsValue = TiObjectToJSValue(value, jsContext);
             }
         }
         else if (value->IsMethod())
         {
-            KMethodRef meth = value->ToMethod();
+            TiMethodRef meth = value->ToMethod();
             AutoPtr<KKJSMethod> kmeth = meth.cast<KKJSMethod>();
             if (!kmeth.isNull() && kmeth->SameContextGroup(jsContext))
             {
@@ -207,23 +207,23 @@ namespace JSUtil
             }
             else
             {
-                // this is a KMethod that needs to be proxied
-                jsValue = KMethodToJSValue(value, jsContext);
+                // this is a TiMethod that needs to be proxied
+                jsValue = TiMethodToJSValue(value, jsContext);
             }
         }
         else if (value->IsList())
         {
-            KListRef list = value->ToList();
-            AutoPtr<KKJSList> klist = list.cast<KKJSList>();
-            if (!klist.isNull() && klist->SameContextGroup(jsContext))
+            TiListRef list = value->ToList();
+            AutoPtr<KKJSList> tiList = list.cast<KKJSList>();
+            if (!tiList.isNull() && tiList->SameContextGroup(jsContext))
             {
                 // this object is actually a pure JS array
-                jsValue = klist->GetJSObject();
+                jsValue = tiList->GetJSObject();
             }
             else
             {
-                // this is a KList that needs to be proxied
-                jsValue = KListToJSValue(value, jsContext);
+                // this is a TiList that needs to be proxied
+                jsValue = TiListToJSValue(value, jsContext);
             }
         }
         else if (value->IsNull())
@@ -243,7 +243,7 @@ namespace JSUtil
 
     }
 
-    JSValueRef KObjectToJSValue(KValueRef objectValue, JSContextRef jsContext)
+    JSValueRef TiObjectToJSValue(KValueRef objectValue, JSContextRef jsContext)
     {
         if (KJSKObjectClass == NULL)
         {
@@ -259,7 +259,7 @@ namespace JSUtil
         return JSObjectMake(jsContext, KJSKObjectClass, new KValueRef(objectValue));
     }
 
-    JSValueRef KMethodToJSValue(KValueRef methodValue, JSContextRef jsContext)
+    JSValueRef TiMethodToJSValue(KValueRef methodValue, JSContextRef jsContext)
     {
         if (KJSKMethodClass == NULL)
         {
@@ -279,7 +279,7 @@ namespace JSUtil
         return jsobject;
     }
 
-    JSValueRef KListToJSValue(KValueRef listValue, JSContextRef jsContext)
+    JSValueRef TiListToJSValue(KValueRef listValue, JSContextRef jsContext)
     {
 
         if (KJSKListClass == NULL)
@@ -365,7 +365,7 @@ namespace JSUtil
             return false;
 
         // Convert the name to a std::string.
-        KObjectRef object = (*value)->ToObject();
+        TiObjectRef object = (*value)->ToObject();
         std::string name(ToChars(jsProperty));
 
         // Special properties always take precedence. This is important
@@ -401,7 +401,7 @@ namespace JSUtil
         if (value == NULL)
             return JSValueMakeUndefined(jsContext);
 
-        KObjectRef object = (*value)->ToObject();
+        TiObjectRef object = (*value)->ToObject();
         std::string name(ToChars(jsProperty));
         JSValueRef jsValue = NULL;
         try
@@ -436,12 +436,12 @@ namespace JSUtil
         if (value == NULL)
             return false;
 
-        KObjectRef object = (*value)->ToObject();
+        TiObjectRef object = (*value)->ToObject();
         bool success = false;
         std::string propertyName(ToChars(jsProperty));
         try
         {
-            KValueRef newValue = ToKrollValue(jsValue, jsContext, jsObject);
+            KValueRef newValue = ToTiValue(jsValue, jsContext, jsObject);
 
             // Arrays in particular have a special behavior when
             // you do something like set the "length" property
@@ -479,11 +479,11 @@ namespace JSUtil
         if (value == NULL)
             return JSValueMakeUndefined(jsContext);
 
-        KMethodRef method = (*value)->ToMethod();
+        TiMethodRef method = (*value)->ToMethod();
         ValueList args;
         for (size_t i = 0; i < argCount; i++)
         {
-            KValueRef argVal = ToKrollValue(jsArgs[i], jsContext, jsThis);
+            KValueRef argVal = ToTiValue(jsArgs[i], jsContext, jsThis);
             Value::Unwrap(argVal);
             args.push_back(argVal);
         }
@@ -506,7 +506,7 @@ namespace JSUtil
         }
         catch (...)
         {
-            KValueRef v = Value::NewString("Unknown exception during Kroll method call");
+            KValueRef v = Value::NewString("Unknown exception during Tide method call");
             *jsException = ToJSValue(v, jsContext);
         }
 
@@ -558,14 +558,14 @@ namespace JSUtil
         // of a number -- bad news.
         if (value->IsList() && !strcmp(name, "length"))
         {
-            KListRef l = value->ToList();
+            TiListRef l = value->ToList();
             return JSValueMakeNumber(jsContext, l->Size());
         }
 
         // Only overload these methods if the value in our object is not a
         // method We want the user to be able to supply their own versions,
         // but we don't want JavaScript code to freak out in situations where
-        // Kroll objects use attributes with the same name that aren't methods.
+        // TideSDK objects use attributes with the same name that aren't methods.
         if (!objValue->IsMethod())
         {
             if (!strcmp(name, "toString"))
@@ -632,7 +632,7 @@ namespace JSUtil
             return JSValueMakeBoolean(jsContext, false);
         }
 
-        // Ensure argument is a Kroll JavaScript
+        // Ensure argument is a TideSDK JavaScript
         JSObjectRef otherObject = JSValueToObject(jsContext, args[0], NULL);
         KValueRef* otherValue = static_cast<KValueRef*>(JSObjectGetPrivate(otherObject));
         if (otherValue == NULL)
@@ -651,7 +651,7 @@ namespace JSUtil
         if (value == NULL)
             return;
 
-        KObjectRef object = (*value)->ToObject();
+        TiObjectRef object = (*value)->ToObject();
         SharedStringList props = object->GetPropertyNames();
         AddSpecialPropertyNames(*value, props, false);
         for (size_t i = 0; i < props->size(); i++)
@@ -771,9 +771,9 @@ namespace JSUtil
         JSStringRelease(scriptContents);
 
         if (exception)
-            throw ValueException(ToKrollValue(exception, jsContext, NULL));
+            throw ValueException(ToTiValue(exception, jsContext, NULL));
 
-        return ToKrollValue(returnValue, jsContext, globalObject);
+        return ToTiValue(returnValue, jsContext, globalObject);
     }
 
     KValueRef EvaluateFile(JSContextRef jsContext, const std::string& fullPath)
@@ -881,7 +881,7 @@ namespace JSUtil
         JSStringRef jsName = JSStringCreateWithUTF8CString(name.c_str());
         JSValueRef prop = JSObjectGetProperty(jsContext, globalObject, jsName, NULL);
         JSStringRelease(jsName);
-        return ToKrollValue(prop, jsContext, globalObject);
+        return ToTiValue(prop, jsContext, globalObject);
     }
 }
 }

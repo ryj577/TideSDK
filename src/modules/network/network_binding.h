@@ -45,7 +45,7 @@ namespace ti
 
 namespace ti
 {
-    class NetworkBinding : public KAccessorObject
+    class NetworkBinding : public AccessorObject
     {
     public:
         NetworkBinding(Host*);
@@ -56,7 +56,7 @@ namespace ti
 
     private:
         Host* host;
-        KObjectRef global;
+        TiObjectRef global;
 
         AutoPtr<HostBinding> GetHostBinding(std::string host);
 

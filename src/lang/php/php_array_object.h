@@ -32,14 +32,14 @@
 * limitations under the License.
 **/
 
-#ifndef _K_PHP_ARRAY_OBJECT_H_
-#define _K_PHP_ARRAY_OBJECT_H_
+#ifndef _PHP_ARRAY_OBJECT_H_
+#define _PHP_ARRAY_OBJECT_H_
 
 #include "php_module.h"
 
 namespace tide
 {
-    class KPHPArrayObject : public KList
+    class KPHPArrayObject : public TiList
     {
         public:
         KPHPArrayObject(zval *list);
@@ -47,7 +47,7 @@ namespace tide
 
         KValueRef Get(const char *name);
         void Set(const char *name, KValueRef value);
-        virtual bool Equals(KObjectRef);
+        virtual bool Equals(TiObjectRef);
         SharedStringList GetPropertyNames();
 
         unsigned int Size();
@@ -61,9 +61,9 @@ namespace tide
         protected:
         zval *list;
 
-        static void AddKrollValueToPHPArray(KValueRef value, zval *phpArray, const char *key);
-        static void AddKrollValueToPHPArray(KValueRef value, zval *phpArray, unsigned int index);
-        static void AddKrollValueToPHPArray(KValueRef value, zval *phpArray);
+        static void AddTideValueToPHPArray(KValueRef value, zval *phpArray, const char *key);
+        static void AddTideValueToPHPArray(KValueRef value, zval *phpArray, unsigned int index);
+        static void AddTideValueToPHPArray(KValueRef value, zval *phpArray);
         DISALLOW_EVIL_CONSTRUCTORS(KPHPArrayObject);
     };
 }

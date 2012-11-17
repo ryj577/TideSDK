@@ -32,32 +32,37 @@
 * limitations under the License.
 **/
 
-#ifndef _K_PYTHON_OBJECT_H_
-#define _K_PYTHON_OBJECT_H_
+#ifndef _PYTHON_LIST_H_
+#define _PYTHON_LIST_H_
 
 #include "python_module.h"
 
 namespace tide
 {
-    class KPythonObject : public KObject
-    {
-    public:
-        KPythonObject(PyObject *obj);
-        KPythonObject(PyObject *obj, bool readOnly);
-        virtual ~KPythonObject();
+	class KPythonList : public TiList
+	{
+	public:
+		KPythonList(PyObject *obj);
+		virtual ~KPythonList();
 
-        virtual void Set(const char *name, KValueRef value);
-        virtual KValueRef Get(const char *name);
-        virtual bool Equals(KObjectRef);
-        virtual SharedStringList GetPropertyNames();
-        PyObject* ToPython();
+		KValueRef Get(const char* name);
+		void Set(const char* name, KValueRef value);
+		virtual bool Equals(TiObjectRef);
+		SharedStringList GetPropertyNames();
 
-    private:
-        PyObject *object;
-        bool readOnly;
-        KObjectRef delegate;
-        DISALLOW_EVIL_CONSTRUCTORS(KPythonObject);
-    };
+		unsigned int Size();
+		void Append(KValueRef value);
+		virtual void SetAt(unsigned int index, KValueRef value);
+		bool Remove(unsigned int index);
+		KValueRef At(unsigned int index);
+
+		PyObject* ToPython();
+
+	protected:
+		PyObject *list;
+		AutoPtr<KPythonObject> object;
+		DISALLOW_EVIL_CONSTRUCTORS(KPythonList);
+	};
 }
 
 #endif

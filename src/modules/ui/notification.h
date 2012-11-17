@@ -50,12 +50,12 @@ typedef char PlatformNotification;
 namespace ti
 {
 
-class Notification : public KAccessorObject
+class Notification : public AccessorObject
 {
 public:
     Notification();
     ~Notification();
-    void Configure(KObjectRef properties);
+    void Configure(TiObjectRef properties);
 
     static bool InitializeImpl();
     static void ShutdownImpl();

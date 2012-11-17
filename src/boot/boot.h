@@ -32,13 +32,13 @@
 * limitations under the License.
 **/
 
-#define _KROLL_BOOT_ 1
 #ifndef _BOOT_H_
+#define _BOOT_H_
 
-// ensure that Kroll API is never included to create
-// an artificial dependency on kroll shared library
-#ifdef _KROLL_H_
-#error You should not have included the kroll api!
+// ensure that Tide API is never included to create
+// an artificial dependency on Tide shared library
+#ifdef _TIDE_H_
+#error You should not have included the Tide api!
 #endif
 
 #define BOOTSTRAP_ENV "KR_BOOTSTRAPPED"
@@ -70,7 +70,7 @@ using std::map;
 #define MODULE_SEPARATOR ":"
 #endif
 
-namespace KrollBoot
+namespace TideBoot
 {
     /**
      * Implemented platform independently

@@ -46,7 +46,7 @@ namespace ti
     }
 
     WorkerContext::WorkerContext(Worker* worker) :
-        KEventObject("Worker.WorkerContext"),
+        EventObject("Worker.WorkerContext"),
         worker(worker),
         jsContext(0),
         running(false)
@@ -62,7 +62,7 @@ namespace ti
         JSGlobalContextRef jsContext = JSUtil::CreateGlobalContext();
         JSGlobalContextRetain(jsContext);
 
-        KObjectRef global(new KKJSObject(jsContext,
+        TiObjectRef global(new KKJSObject(jsContext,
             JSContextGetGlobalObject(jsContext)));
 
         global->SetMethod("postMessage", StaticBoundMethod::FromMethod<WorkerContext>(
@@ -196,7 +196,7 @@ namespace ti
         if (!jsContext)
             return Value::Undefined;
 
-        KObjectRef global(new KKJSObject(jsContext,
+        TiObjectRef global(new KKJSObject(jsContext,
             JSContextGetGlobalObject(jsContext)));
         return global->Get(name);
     }
@@ -206,7 +206,7 @@ namespace ti
         if (!jsContext)
             return;
 
-        KObjectRef global(new KKJSObject(jsContext,
+        TiObjectRef global(new KKJSObject(jsContext,
             JSContextGetGlobalObject(jsContext)));
         global->Set(name, value);
     }

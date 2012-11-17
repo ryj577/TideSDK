@@ -32,36 +32,30 @@
 * limitations under the License.
 **/
 
-#ifndef _K_RUBY_OBJECT_H_
-#define _K_RUBY_OBJECT_H_
+#ifndef _PYTHON_DICT_H_
+#define _PYTHON_DICT_H_
 
-namespace tide {
+#include "python_module.h"
 
-class KRubyObject : public KObject {
-public:
-    KRubyObject(VALUE object);
-    virtual ~KRubyObject();
+namespace tide
+{
+    class KPythonDict : public TiObject
+    {
+    public:
+        KPythonDict(PyObject *obj);
+        virtual ~KPythonDict();
 
-    virtual void Set(const char *name, KValueRef value);
-    virtual KValueRef Get(const char *name);
+        virtual void Set(const char *name, KValueRef value);
+        virtual KValueRef Get(const char *name);
+        virtual bool Equals(TiObjectRef);
+        virtual SharedStringList GetPropertyNames();
 
-    virtual SharedStringList GetPropertyNames();
-    virtual SharedString DisplayString(int);
-    VALUE ToRuby();
+        PyObject* ToPython();
 
-    /*
-     * Determine if the given Ruby object equals this one
-     * by comparing these objects's identity e.g. equals?()
-     *  @param other the object to test
-     *  @returns true if objects have reference equality, false otherwise
-     */
-    virtual bool Equals(KObjectRef);
-
-private:
-    VALUE object;
-
-};
-
+    private:
+        PyObject *object;
+        DISALLOW_EVIL_CONSTRUCTORS(KPythonDict);
+    };
 }
 
-#endif /* RUBY_BOUND_OBJECT_H_ */
+#endif

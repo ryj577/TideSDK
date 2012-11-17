@@ -63,7 +63,7 @@ namespace tide
         //const char *mimeType = args.GetString(0).c_str();
         const char *name = args.GetString(1).c_str();
         std::string code = args.GetString(2);
-        KObjectRef windowGlobal = args.GetObject(3);
+        TiObjectRef windowGlobal = args.GetObject(3);
         
         // We must unindent the code block to prevent parsing errors.
         PythonEvaluator::UnindentCode(code);
@@ -71,7 +71,7 @@ namespace tide
         // Insert all the js global properties into a copy of globals()
         PyObject* mainModule = PyImport_AddModule("__main__");
         PyObject* globals = PyDict_Copy(PyModule_GetDict(mainModule));
-        KObjectPropsToDict(windowGlobal, globals);
+        TiObjectPropsToDict(windowGlobal, globals);
 
         // Another way to do this is to use a Python sub-interpreter,
         // but that seems to put us into restricted execution mode
@@ -109,17 +109,17 @@ namespace tide
         }
         else
         {
-            KValueRef kv = PythonUtils::ToKrollValue(returnValue);
+            KValueRef kv = PythonUtils::ToTiValue(returnValue);
             Py_DECREF(returnValue);
         }
 
         // Move all the new variables in globals() to the window context.
         // These are things that are now defined globally in JS.
-        DictToKObjectProps(globals, windowGlobal);
+        DictToTiObjectProps(globals, windowGlobal);
         result->SetValue(kv);
     }
 
-    void PythonEvaluator::KObjectPropsToDict(KObjectRef o, PyObject* pyobj)
+    void PythonEvaluator::TiObjectPropsToDict(TiObjectRef o, PyObject* pyobj)
     {
         PyObject* builtins = PyDict_GetItemString(pyobj, "__builtins__");
 
@@ -142,7 +142,7 @@ namespace tide
         }
     }
 
-    void PythonEvaluator::DictToKObjectProps(PyObject* dict, KObjectRef o)
+    void PythonEvaluator::DictToTiObjectProps(PyObject* dict, TiObjectRef o)
     {
         // Avoid compiler warnings
         PyObject *items = PyObject_CallMethod(dict, (char*) "items", NULL);
@@ -161,7 +161,7 @@ namespace tide
             std::string sk = PythonUtils::ToString(k);
             if (sk.find("__") != 0)
             {
-                KValueRef newValue = PythonUtils::ToKrollValue(v);
+                KValueRef newValue = PythonUtils::ToTiValue(v);
                 KValueRef existingValue = o->Get(sk.c_str());
                 if (!newValue->Equals(existingValue))
                 {

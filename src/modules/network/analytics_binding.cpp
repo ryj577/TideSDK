@@ -62,7 +62,7 @@ static void AddQueryParameter(std::string& url, const std::string& key,
 }
 
 AnalyticsBinding::AnalyticsBinding() :
-    KEventObject("Network.Analytics"),
+    EventObject("Network.Analytics"),
     running(true),
     curlHandle(0),
     startCallback(0)
@@ -146,7 +146,7 @@ void AnalyticsBinding::_SendEvent(const ValueList &args, KValueRef result)
 
 void AnalyticsBinding::run()
 {
-    START_KROLL_THREAD;
+    START_TIDE_THREAD;
 
     this->curlHandle = curl_easy_init();
 
@@ -177,7 +177,7 @@ void AnalyticsBinding::run()
     curl_easy_cleanup(this->curlHandle);
     this->curlHandle = 0;
 
-    END_KROLL_THREAD;
+    END_TIDE_THREAD;
 }
 
 void AnalyticsBinding::SendEventToAPIServer(std::string& eventData)

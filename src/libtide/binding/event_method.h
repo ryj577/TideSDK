@@ -37,44 +37,44 @@
 
 namespace tide
 {
-    class TIDE_API KEventMethod : public KEventObject, public KMethod
+    class TIDE_API EventMethod : public EventObject, public TiMethod
     {
         public:
-        KEventMethod(const char* name = "") :
-            KEventObject(name),
+        EventMethod(const char* name = "") :
+            EventObject(name),
             count(1) {}
 
-        // @see KMethod::Call
+        // @see TiMethod::Call
         virtual KValueRef Call(const ValueList& args) = 0;
 
-        // @see KMethod::Set
+        // @see TiMethod::Set
         virtual void Set(const char *name, KValueRef value)
         {
-            KEventObject::Set(name, value);
+            EventObject::Set(name, value);
         }
 
-        // @see KMethod::Get
+        // @see TiMethod::Get
         virtual KValueRef Get(const char *name)
         {
-            return KEventObject::Get(name);
+            return EventObject::Get(name);
         }
 
-        // @see KMethod::GetPropertyNames
+        // @see TiMethod::GetPropertyNames
         virtual SharedStringList GetPropertyNames()
         {
-            return KEventObject::GetPropertyNames();
+            return EventObject::GetPropertyNames();
         }
 
-        // @see KMethod::HasProperty
+        // @see TiMethod::HasProperty
         virtual bool HasProperty(const char *name)
         {
-            return KEventObject::HasProperty(name);
+            return EventObject::HasProperty(name);
         }
         
-        // @see KMethod::DisplayString
+        // @see TiMethod::DisplayString
         SharedString DisplayString(int levels)
         {
-            return KEventObject::DisplayString(levels);
+            return EventObject::DisplayString(levels);
         }
 
         /**
@@ -86,9 +86,9 @@ namespace tide
         {
             MethodCallback* callback = NewCallback<T, const ValueList&, KValueRef>(static_cast<T*>(this), method);
 
-            KMethodRef bound_method = new StaticBoundMethod(callback);
+            TiMethodRef bound_method = new StaticBoundMethod(callback);
             KValueRef method_value = Value::NewMethod(bound_method);
-            KEventObject::Set(name, method_value);
+            EventObject::Set(name, method_value);
         }
 
         virtual void duplicate()

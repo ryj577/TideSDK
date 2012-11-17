@@ -45,7 +45,7 @@ namespace ti
     }
 
     Worker::Worker(std::string& code) :
-        KEventObject("Worker.Worker"),
+        EventObject("Worker.Worker"),
         code(code),
         workerContext(new WorkerContext(this)),
         adapter(0)
@@ -98,13 +98,13 @@ namespace ti
 
     void Worker::Run()
     {
-        START_KROLL_THREAD;
+        START_TIDE_THREAD;
 
         // The worker manages the lifetime of the worker context, so we
         // can just pass a pointer to ourselves instead of an AutoPtr.
         workerContext->StartWorker(this->code);
 
-        END_KROLL_THREAD;
+        END_TIDE_THREAD;
     }
 
     void Worker::SendMessageToMainThread(KValueRef message)
@@ -175,7 +175,7 @@ namespace ti
 
     void Worker::Set(const char* name, KValueRef value)
     {
-        KEventObject::Set(name, value);
+        EventObject::Set(name, value);
 
         // We now have an onMessage target. Send all our queued
         // messages to this method.

@@ -32,12 +32,12 @@
 * limitations under the License.
 **/
 
-#include "k_python_dict.h"
+#include "python_dict.h"
 
 namespace tide
 {
     KPythonDict::KPythonDict(PyObject *obj) :
-        KObject("Python,KPythonDict"),
+        TiObject("Python,KPythonDict"),
         object(obj)
     {
         PyLockGIL lock;
@@ -78,7 +78,7 @@ namespace tide
 
         try
         {
-            KValueRef value = PythonUtils::ToKrollValue(item);
+            KValueRef value = PythonUtils::ToTiValue(item);
             Py_DECREF(item);
             return value;
         }
@@ -89,7 +89,7 @@ namespace tide
         }
     }
 
-    bool KPythonDict::Equals(KObjectRef other)
+    bool KPythonDict::Equals(TiObjectRef other)
     {
         AutoPtr<KPythonDict> pyOther = other.cast<KPythonDict>();
 

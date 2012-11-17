@@ -32,40 +32,40 @@
 * limitations under the License.
 **/
 
-#ifndef _K_PHP_LIST_H_
-#define _K_PHP_LIST_H_
+#ifndef _RUBY_METHOD_H_
+#define _RUBY_METHOD_H_
 
-#include "php_module.h"
+namespace tide {
 
-namespace tide
+class KRubyMethod : public TiMethod
 {
-    class KPHPList : public KList
-    {
-        public:
-        KPHPList(zval *list);
-        virtual ~KPHPList();
+    public:
+    KRubyMethod(VALUE method);
+    KRubyMethod(VALUE method, const char*);
+    KRubyMethod(VALUE method, VALUE arg);
+    virtual ~KRubyMethod();
+    KValueRef Call(const ValueList& args);
+    virtual void Set(const char *name, KValueRef value);
+    virtual KValueRef Get(const char *name);
+    virtual SharedStringList GetPropertyNames();
+    virtual SharedString DisplayString(int);
+    VALUE ToRuby();
 
-        KValueRef Get(const char* name);
-        void Set(const char* name, KValueRef value);
-        virtual bool Equals(KObjectRef);
-        SharedStringList GetPropertyNames();
+    /*
+     * Determine if the given Ruby object equals this one
+     * by comparing these objects's identity e.g. equals?()
+     *  @param other the object to test
+     *  @returns true if objects have reference equality, false otherwise
+     */
+    virtual bool Equals(TiObjectRef);
 
-        unsigned int Size();
-        void Append(KValueRef value);
-        virtual void SetAt(unsigned int index, KValueRef value);
-        bool Remove(unsigned int index);
-        KValueRef At(unsigned int index);
+    private:
+    VALUE method;
+    VALUE arg;
+    AutoPtr<KRubyObject> object;
+    char* name;
+};
 
-        zval* ToPHP();
-
-        protected:
-        zval *list;
-
-        static void AddKrollValueToPHPArray(KValueRef value, zval *phpArray, const char* key);
-        static void AddKrollValueToPHPArray(KValueRef value, zval *phpArray, unsigned int index);
-        static void AddKrollValueToPHPArray(KValueRef value, zval *phpArray);
-        DISALLOW_EVIL_CONSTRUCTORS(KPHPList);
-    };
 }
 
 #endif

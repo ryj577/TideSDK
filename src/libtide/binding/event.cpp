@@ -70,8 +70,8 @@ namespace tide
     std::string Event::HTTP_DATA_SENT = "http.datasent";
     std::string Event::HTTP_DATA_RECEIVED = "http.datareceived";
 
-    Event::Event(AutoPtr<KEventObject> target, const std::string& eventName) :
-        KAccessorObject("Event"),
+    Event::Event(AutoPtr<EventObject> target, const std::string& eventName) :
+        AccessorObject("Event"),
         target(target),
         eventName(eventName),
         stopped(false),
@@ -111,7 +111,7 @@ namespace tide
         this->preventedDefault = true;
     }
 
-    void Event::SetEventConstants(KObject* target)
+    void Event::SetEventConstants(TiObject* target)
     {
         // @tiproperty[String, ALL, since=0.6] The ALL event constant
         // @tiproperty[String, FOCUSED, since=0.6] The FOCUSED event constant

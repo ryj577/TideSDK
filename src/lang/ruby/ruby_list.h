@@ -32,28 +32,42 @@
 * limitations under the License.
 **/
 
-#ifndef _K_PHP_OBJECT_H_
-#define _K_PHP_OBJECT_H_
+#ifndef _RUBY_LIST_H_
+#define _RUBY_LIST_H_
+
+#include "ruby_module.h"
 
 namespace tide
 {
-    class KPHPObject : public KObject
+    class KRubyList : public TiList
     {
-        public:
-        KPHPObject(zval* object);
-        virtual ~KPHPObject();
+    public:
+        KRubyList(VALUE);
+        virtual ~KRubyList();
 
-        virtual void Set(const char *name, KValueRef value);
-        virtual KValueRef Get(const char *name);
-        virtual SharedStringList GetPropertyNames();
-        virtual SharedString DisplayString(int);
-        virtual bool Equals(KObjectRef);
-        bool PropertyExists(const char* property TSRMLS_DC);
-        bool MethodExists(const char* methodName TSRMLS_DC);
-        zval* ToPHP();
-        
-        private:
-        zval* object;
+        void Append(KValueRef value);
+        unsigned int Size();
+        KValueRef At(unsigned int index);
+        void SetAt(unsigned int index, KValueRef value);
+        bool Remove(unsigned int index);
+        void Set(const char* name, KValueRef value);
+        KValueRef Get(const char* name);
+        SharedStringList GetPropertyNames();
+        SharedString DisplayString(int);
+        VALUE ToRuby();
+
+    /*
+     * Determine if the given Ruby object equals this one
+     * by comparing these objects's identity e.g. equals?()
+     *  @param other the object to test
+     *  @returns true if objects have reference equality, false otherwise
+     */
+    virtual bool Equals(TiObjectRef);
+
+    protected:
+        VALUE list;
+        AutoPtr<KRubyObject> object;
+        DISALLOW_EVIL_CONSTRUCTORS(KRubyList);
     };
 }
 

@@ -32,29 +32,39 @@
 * limitations under the License.
 **/
 
-#ifndef _K_PYTHON_DICT_H_
-#define _K_PYTHON_DICT_H_
+#ifndef _PHP_LIST_H_
+#define _PHP_LIST_H_
 
-#include "python_module.h"
+#include "php_module.h"
 
 namespace tide
 {
-    class KPythonDict : public KObject
+    class KPHPList : public TiList
     {
-    public:
-        KPythonDict(PyObject *obj);
-        virtual ~KPythonDict();
+        public:
+        KPHPList(zval *list);
+        virtual ~KPHPList();
 
-        virtual void Set(const char *name, KValueRef value);
-        virtual KValueRef Get(const char *name);
-        virtual bool Equals(KObjectRef);
-        virtual SharedStringList GetPropertyNames();
+        KValueRef Get(const char* name);
+        void Set(const char* name, KValueRef value);
+        virtual bool Equals(TiObjectRef);
+        SharedStringList GetPropertyNames();
 
-        PyObject* ToPython();
+        unsigned int Size();
+        void Append(KValueRef value);
+        virtual void SetAt(unsigned int index, KValueRef value);
+        bool Remove(unsigned int index);
+        KValueRef At(unsigned int index);
 
-    private:
-        PyObject *object;
-        DISALLOW_EVIL_CONSTRUCTORS(KPythonDict);
+        zval* ToPHP();
+
+        protected:
+        zval *list;
+
+        static void AddTideValueToPHPArray(KValueRef value, zval *phpArray, const char* key);
+        static void AddTideValueToPHPArray(KValueRef value, zval *phpArray, unsigned int index);
+        static void AddTideValueToPHPArray(KValueRef value, zval *phpArray);
+        DISALLOW_EVIL_CONSTRUCTORS(KPHPList);
     };
 }
 

@@ -32,27 +32,27 @@
 * limitations under the License.
 **/
 
-#include "k_php_list.h"
+#include "php_list.h"
 
 namespace tide
 {
-    KPHPList::KPHPList(zval* list) :
-        KList("PHP.KPHPList"),
+    KPHPArrayObject::KPHPArrayObject(zval *list) :
+        TiList("PHP.KPHPArrayObject"),
         list(list)
     {
         if (Z_TYPE_P(list) != IS_ARRAY)
             throw ValueException::FromString("Invalid zval passed. Should be an array type.");
     }
 
-    KPHPList::~KPHPList()
+    KPHPArrayObject::~KPHPArrayObject()
     {
     }
 
-    KValueRef KPHPList::Get(const char* name)
+    KValueRef KPHPArrayObject::Get(const char* name)
     {
-        if (KList::IsInt(name))
+        if (TiList::IsInt(name))
         {
-            return this->At(KList::ToIndex(name));
+            return this->At(TiList::ToIndex(name));
         }
 
         unsigned long hashval = zend_get_hash_value((char *) name, strlen(name));
@@ -68,90 +68,93 @@ namespace tide
         }
 
         TSRMLS_FETCH();
-        KValueRef v = PHPUtils::ToKrollValue((zval *) copyval TSRMLS_CC);
+        KValueRef v = PHPUtils::ToTiValue((zval *) copyval TSRMLS_CC);
         return v;
     }
 
-    void KPHPList::Set(const char* name, KValueRef value)
+    void KPHPArrayObject::Set(const char* name, KValueRef value)
     {
         // Check for integer value as name
-        if (KList::IsInt(name))
+        if (TiList::IsInt(name))
         {
-            this->SetAt(KList::ToIndex(name), value);
+            this->SetAt(TiList::ToIndex(name), value);
         }
         else
         {
-            AddKrollValueToPHPArray(value, this->list, name);
+            AddTideValueToPHPArray(value, this->list, name);
         }
     }
 
-    bool KPHPList::Equals(KObjectRef other)
+    bool KPHPArrayObject::Equals(TiObjectRef other)
     {
-        AutoPtr<KPHPList> phpOther = other.cast<KPHPList>();
+        AutoPtr<KPHPArrayObject> phpOther = other.cast<KPHPArrayObject>();
 
         // This is not a PHP object
         if (phpOther.isNull())
             return false;
 
-        // Do an identity (===) comparison on the two hashes
-        TSRMLS_FETCH();
-        return zend_hash_compare(
-            Z_ARRVAL_P(phpOther->ToPHP()), Z_ARRVAL_P(this->ToPHP()), 
-            (compare_func_t) PHPUtils::HashZvalCompareCallback, 1 TSRMLS_CC) == 0;
+        return phpOther->ToPHP() == this->ToPHP();
     }
 
-    SharedStringList KPHPList::GetPropertyNames()
+    SharedStringList KPHPArrayObject::GetPropertyNames()
     {
-        return PHPUtils::GetHashKeys(Z_ARRVAL_P(this->list));
-    }
+        SharedStringList property_names = new StringList();
+        HashPosition pos;
+        HashTable *ht = Z_ARRVAL_P(this->list);
 
-    unsigned int KPHPList::Size()
-    {
-        return (unsigned int) zend_hash_num_elements(Z_ARRVAL_P(this->list));
-    }
-
-    void KPHPList::Append(KValueRef value)
-    {
-        AddKrollValueToPHPArray(value, this->list);
-    }
-
-    void KPHPList::SetAt(unsigned int index, KValueRef value)
-    {
-        AddKrollValueToPHPArray(value, this->list, index);
-    }
-
-    bool KPHPList::Remove(unsigned int index)
-    {
-        if (index < this->Size())
+        for (zend_hash_internal_pointer_reset_ex(ht, &pos);
+                zend_hash_has_more_elements_ex(ht, &pos) == SUCCESS;
+                zend_hash_move_forward_ex(ht, &pos))
         {
-            if (zend_hash_index_del(Z_ARRVAL_P(this->list), (unsigned long) index) == SUCCESS)
-                return true;
+            char *key;
+            unsigned int keylen;
+            unsigned long index;
+
+            zend_hash_get_current_key_ex(ht, &key, &keylen, &index, 0, &pos);
+
+            property_names->push_back(new std::string(key));
         }
 
-        return false;
+        zend_hash_destroy(ht);
+        FREE_HASHTABLE(ht);
+
+        return property_names;
     }
 
-    KValueRef KPHPList::At(unsigned int index)
+    unsigned int KPHPArrayObject::Size()
     {
-        zval **copyval;
-
-        if (zend_hash_index_find(Z_ARRVAL_P(this->list),
-                index, (void**)&copyval) == FAILURE)
-        {
-            return Value::Undefined;
-        }
-
-        TSRMLS_FETCH();
-        KValueRef v = PHPUtils::ToKrollValue((zval *) copyval TSRMLS_CC);
-        return v;
+        /*TODO: Implement*/
+        return 0;
     }
 
-    zval* KPHPList::ToPHP()
+    void KPHPArrayObject::Append(KValueRef value)
+    {
+        /*TODO: Implement*/
+    }
+
+    void KPHPArrayObject::SetAt(unsigned int index, KValueRef value)
+    {
+        /*TODO: Implement*/
+    }
+
+    bool KPHPArrayObject::Remove(unsigned int index)
+    {
+        /*TODO: Implement*/
+        return true;
+    }
+
+    KValueRef KPHPArrayObject::At(unsigned int index)
+    {
+        /*TODO: Implement*/
+        return Value::Null;
+    }
+
+    zval* KPHPArrayObject::ToPHP()
     {
         return this->list;
     }
 
-    void KPHPList::AddKrollValueToPHPArray(KValueRef value, zval *phpArray, const char* key)
+    void KPHPArrayObject::AddTideValueToPHPArray(KValueRef value, zval *phpArray, const char *key)
     {
         if (value->IsNull() || value->IsUndefined())
         {
@@ -167,7 +170,7 @@ namespace tide
         else if (value->IsNumber())
         {
             /* No way to check whether the number is an
-               integer or a double here. All Kroll numbers
+               integer or a double here. All Tide numbers
                are doubles, so return a double. This could
                cause some PHP to function incorrectly if it's
                doing strict type checking. */
@@ -188,7 +191,7 @@ namespace tide
         else if (value->IsList())
         {
             zval *phpValue;
-            AutoPtr<KPHPList> pl = value->ToList().cast<KPHPList>();
+            AutoPtr<KPHPArrayObject> pl = value->ToList().cast<KPHPArrayObject>();
             if (!pl.isNull())
                 phpValue = pl->ToPHP();
             else
@@ -198,7 +201,7 @@ namespace tide
         }
     }
 
-    void KPHPList::AddKrollValueToPHPArray(KValueRef value, zval *phpArray, unsigned int index)
+    void KPHPArrayObject::AddTideValueToPHPArray(KValueRef value, zval *phpArray, unsigned int index)
     {
         if (value->IsNull() || value->IsUndefined())
         {
@@ -214,7 +217,7 @@ namespace tide
         else if (value->IsNumber())
         {
             /* No way to check whether the number is an
-               integer or a double here. All Kroll numbers
+               integer or a double here. All Tide numbers
                are doubles, so return a double. This could
                cause some PHP to function incorrectly if it's
                doing strict type checking. */
@@ -235,7 +238,7 @@ namespace tide
         else if (value->IsList())
         {
             zval *phpValue;
-            AutoPtr<KPHPList> pl = value->ToList().cast<KPHPList>();
+            AutoPtr<KPHPArrayObject> pl = value->ToList().cast<KPHPArrayObject>();
             if (!pl.isNull())
                 phpValue = pl->ToPHP();
             else
@@ -245,8 +248,50 @@ namespace tide
         }
     }
 
-    void KPHPList::AddKrollValueToPHPArray(KValueRef value, zval *phpArray)
+    void KPHPArrayObject::AddTideValueToPHPArray(KValueRef value, zval *phpArray)
     {
-        AddKrollValueToPHPArray(value, phpArray, (unsigned int) zend_hash_num_elements(Z_ARRVAL_P(phpArray)));
+        if (value->IsNull() || value->IsUndefined())
+        {
+            add_next_index_null(phpArray);
+        }
+        else if (value->IsBool())
+        {
+            if (value->ToBool())
+                add_next_index_bool(phpArray, 1);
+            else
+                add_next_index_bool(phpArray, 0);
+        }
+        else if (value->IsNumber())
+        {
+            /* No way to check whether the number is an
+               integer or a double here. All Tide numbers
+               are doubles, so return a double. This could
+               cause some PHP to function incorrectly if it's
+               doing strict type checking. */
+            add_next_index_double(phpArray, value->ToNumber());
+        }
+        else if (value->IsString())
+        {
+            add_next_index_stringl(phpArray, (char *) value->ToString(), strlen(value->ToString()), 1);
+        }
+        else if (value->IsObject())
+        {
+            /*TODO: Implement*/
+        }
+        else if (value->IsMethod())
+        {
+            /*TODO: Implement*/
+        }
+        else if (value->IsList())
+        {
+            zval *phpValue;
+            AutoPtr<KPHPArrayObject> pl = value->ToList().cast<KPHPArrayObject>();
+            if (!pl.isNull())
+                phpValue = pl->ToPHP();
+            else
+                phpValue = PHPUtils::ToPHPValue(value);
+
+            add_next_index_zval(phpArray, phpValue);
+        }
     }
 }

@@ -32,33 +32,36 @@
 * limitations under the License.
 **/
 
-#ifndef _K_PHP_METHOD_H_
-#define _K_PHP_METHOD_H_
+#ifndef _RUBY_HASH_H_
+#define _RUBY_HASH_H_
 
-namespace tide
-{
-    class KPHPMethod : public KMethod
-    {
-        public:
-        KPHPMethod(zval* object, const char* methodName);
-        KPHPMethod(const char *functionName);
+namespace tide {
 
-        virtual ~KPHPMethod();
-        KValueRef Call(const ValueList& args);
-        virtual void Set(const char *name, KValueRef value);
-        virtual KValueRef Get(const char *name);
-        virtual SharedStringList GetPropertyNames();
-        virtual SharedString DisplayString(int);
-        virtual bool Equals(KObjectRef);
-        bool PropertyExists(const char* property);
-        zval* ToPHP();
+class KRubyHash : public TiObject {
+public:
+    KRubyHash(VALUE object);
+    virtual ~KRubyHash();
 
-        private:
-        zval* object;
-        char* methodName;
-        zval* zMethodName;
-        KObjectRef globalObject;
-    };
+    virtual void Set(const char *name, KValueRef value);
+    virtual KValueRef Get(const char *name);
+    virtual SharedStringList GetPropertyNames();
+    virtual SharedString DisplayString(int);
+    VALUE ToRuby();
+
+    /*
+     * Determine if the given Ruby object equals this one
+     * by comparing these objects's identity e.g. equals?()
+     *  @param other the object to test
+     *  @returns true if objects have reference equality, false otherwise
+     */
+    virtual bool Equals(TiObjectRef);
+
+private:
+    VALUE hash;
+    AutoPtr<KRubyObject> object;
+
+};
+
 }
 
-#endif
+#endif /* RUBY_BOUND_OBJECT_H_ */

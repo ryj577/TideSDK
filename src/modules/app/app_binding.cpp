@@ -11,8 +11,8 @@
 
 namespace ti
 {
-	AppBinding::AppBinding(Host* host, KObjectRef global) :
-		KAccessorObject("App"),
+	AppBinding::AppBinding(Host* host, TiObjectRef global) :
+		AccessorObject("App"),
 		host(host),
 		global(global)
 	{
@@ -247,7 +247,7 @@ namespace ti
 		
 		if (args.size() > 0 && args.at(0)->IsObject())
 		{
-			KObjectRef p = args.at(0)->ToObject();
+			TiObjectRef p = args.at(0)->ToObject();
 			SharedStringList names = p->GetPropertyNames();
 			for (size_t i = 0; i < names->size(); i++)
 			{
@@ -272,7 +272,7 @@ namespace ti
 	{
 		if (args.size() >= 1 && args.at(0)->IsString()) {
 			std::string file_path = args.at(0)->ToString();
-			KObjectRef properties = new PropertiesBinding(file_path);
+			TiObjectRef properties = new PropertiesBinding(file_path);
 			result->SetObject(properties);
 		}
 	}
@@ -380,7 +380,7 @@ namespace ti
 
 	void AppBinding::GetArguments(const ValueList& args, KValueRef result)
 	{
-		static KListRef argList(0);
+		static TiListRef argList(0);
 		if (argList.isNull())
 		{
 			// Skip the first argument which is the filename of the executable.

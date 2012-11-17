@@ -32,42 +32,36 @@
 * limitations under the License.
 **/
 
-#ifndef _K_RUBY_LIST_H_
-#define _K_RUBY_LIST_H_
+#ifndef _PYTHON_TUPLE_H_
+#define _PYTHON_TUPLE_H_
 
-#include "ruby_module.h"
+#include "python_module.h"
 
 namespace tide
 {
-    class KRubyList : public KList
+    class KPythonTuple : public TiList
     {
     public:
-        KRubyList(VALUE);
-        virtual ~KRubyList();
+        KPythonTuple(PyObject *obj);
+        virtual ~KPythonTuple();
 
-        void Append(KValueRef value);
-        unsigned int Size();
-        KValueRef At(unsigned int index);
-        void SetAt(unsigned int index, KValueRef value);
-        bool Remove(unsigned int index);
-        void Set(const char* name, KValueRef value);
-        KValueRef Get(const char* name);
+        KValueRef Get(const char *name);
+        void Set(const char *name, KValueRef value);
+        virtual bool Equals(TiObjectRef);
         SharedStringList GetPropertyNames();
-        SharedString DisplayString(int);
-        VALUE ToRuby();
 
-    /*
-     * Determine if the given Ruby object equals this one
-     * by comparing these objects's identity e.g. equals?()
-     *  @param other the object to test
-     *  @returns true if objects have reference equality, false otherwise
-     */
-    virtual bool Equals(KObjectRef);
+        unsigned int Size();
+        void Append(KValueRef value);
+        virtual void SetAt(unsigned int index, KValueRef value);
+        bool Remove(unsigned int index);
+        KValueRef At(unsigned int index);
+
+        PyObject* ToPython();
 
     protected:
-        VALUE list;
-        AutoPtr<KRubyObject> object;
-        DISALLOW_EVIL_CONSTRUCTORS(KRubyList);
+        PyObject *tuple;
+        AutoPtr<KPythonObject> object;
+        DISALLOW_EVIL_CONSTRUCTORS(KPythonTuple);
     };
 }
 

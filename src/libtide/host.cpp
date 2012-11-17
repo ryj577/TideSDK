@@ -410,7 +410,7 @@ namespace tide
             SharedString s = e.GetValue()->DisplayString();
             logger->Error("Could not load module (%s): %s", path.c_str(), s->c_str());
 #ifdef OS_OSX
-            KrollDumpStackTrace();
+            TideDumpStackTrace();
 #endif
         }
         catch(std::exception &e)
@@ -418,14 +418,14 @@ namespace tide
             string msg = e.what();
             logger->Error("Could not load module (%s): %s", path.c_str(), msg.c_str());
 #ifdef OS_OSX
-            KrollDumpStackTrace();
+            TideDumpStackTrace();
 #endif
         }
         catch(...)
         {
             logger->Error("Could not load module (%s)", path.c_str());
 #ifdef OS_OSX
-            KrollDumpStackTrace();
+            TideDumpStackTrace();
 #endif
         }
 
@@ -716,13 +716,13 @@ namespace tide
         this->ExitImpl(exitCode);
     }
 
-    KValueRef Host::RunOnMainThread(KMethodRef method, const ValueList& args,
+    KValueRef Host::RunOnMainThread(TiMethodRef method, const ValueList& args,
         bool waitForCompletion)
     {
         return this->RunOnMainThread(method, 0, args, waitForCompletion);
     }
 
-    KValueRef Host::RunOnMainThread(KMethodRef method, KObjectRef thisObject,
+    KValueRef Host::RunOnMainThread(TiMethodRef method, TiObjectRef thisObject,
         const ValueList& args, bool waitForCompletion)
     {
         MainThreadJob* job = new MainThreadJob(method, thisObject,
@@ -789,13 +789,13 @@ namespace tide
         }
     }
 
-    KValueRef RunOnMainThread(KMethodRef method, const ValueList& args,
+    KValueRef RunOnMainThread(TiMethodRef method, const ValueList& args,
         bool waitForCompletion)
     {
         return hostInstance->RunOnMainThread(method, args, waitForCompletion);
     }
 
-    KValueRef RunOnMainThread(KMethodRef method, KObjectRef thisObject,
+    KValueRef RunOnMainThread(TiMethodRef method, TiObjectRef thisObject,
         const ValueList& args, bool waitForCompletion)
     {
         return hostInstance->RunOnMainThread(method, args, waitForCompletion);

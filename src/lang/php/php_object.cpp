@@ -37,7 +37,7 @@
 namespace tide {
 
     KPHPObject::KPHPObject(zval* object) :
-        KObject("PHP.KPHPObject"),
+        TiObject("PHP.KPHPObject"),
         object(object)
     {
         zval_addref_p(object);
@@ -89,13 +89,13 @@ namespace tide {
             zval* zProperty = Z_OBJ_HANDLER_P(object, read_property)(
                 object, &zname, 2 TSRMLS_CC);
 
-            return PHPUtils::ToKrollValue(zProperty TSRMLS_CC);
+            return PHPUtils::ToTiValue(zProperty TSRMLS_CC);
 
         } // Next just try reading it from the properties hash.
         else if (zend_hash_find(Z_OBJPROP_P(object),
             name, nameLength + 1, (void**) &zPropertyPtr) != FAILURE)
         {
-            return PHPUtils::ToKrollValue(*zPropertyPtr TSRMLS_CC);
+            return PHPUtils::ToTiValue(*zPropertyPtr TSRMLS_CC);
 
         } // Check if the method exists on the object
         else if (this->MethodExists(name TSRMLS_CC))
@@ -108,7 +108,7 @@ namespace tide {
         }
     }
 
-    bool KPHPObject::Equals(KObjectRef other)
+    bool KPHPObject::Equals(TiObjectRef other)
     {
         AutoPtr<KPHPObject> phpOther = other.cast<KPHPObject>();
         if (phpOther.isNull())
