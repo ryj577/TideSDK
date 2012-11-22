@@ -296,7 +296,7 @@ namespace UTILS_NS
         }
         else
         {
-            url = scheme;
+            url = "http";
             url.append("://"STRING(_DISTRIBUTION_URL));
             if (stream == "production" || stream == "p")
             {
