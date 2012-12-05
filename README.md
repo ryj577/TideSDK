@@ -1,3 +1,7 @@
+## EDIT:
+
+Found out the hard way that this patch doesn't go the whole mile anyway... The installer app does not even bother to check tiapp.xml, it just uses the hard-coded value, so even though analytics and initial update check is affected by this patch, the only way in 1.3.x series to have your app use your own api is to fork, change the hard-coded constant and re-build the sdk on all platforms (or [switch framework](https://github.com/neam/webapp-xul-wrapper)). To be clear: **THIS BRANCH AND RELATED PATCHES ARE OBSOLETE** :) Only kept for archival purposes...
+
 This particular branch of TideSDK
 ======
 
