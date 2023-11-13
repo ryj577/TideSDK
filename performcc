@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마케팅 분석 계산기</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f2f2f2;
+            color: #333;
+            text-align: center;
+            margin: 50px;
+        }
+
+        h1 {
+            color: #007bff;
+        }
+
+        #login, #main, #광고, #제품, #마케팅투자, #고객관리 {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .결과 {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div id="login">
+        <h1>로그인</h1>
+        <input type="text" id="id" placeholder="ID를 입력하세요">
+        <input type="password" id="password" placeholder="Password를 입력하세요">
+        <button onclick="checkLogin()">로그인</button>
+    </div>
+
+    <div id="main" style="display: none;">
+        <h1>포퍼먼스 계산기</h1>
+        <button onclick="toggleCategory('광고')">광고</button>
+        <button onclick="toggleCategory('제품')">제품</button>
+        <button onclick="toggleCategory('마케팅투자')">마케팅 투자</button>
+        <button onclick="toggleCategory('고객관리')">고객관리</button>
+    </div>
+
+    <div id="광고" style="display: none;">
+        <h1>광고 분석</h1>
+        <input type="number" id="광고비용" placeholder="광고비용">
+        <input type="number" id="광고수익" placeholder="광고수익">
+        <button onclick="calculateROAS('광고')">계산</button>
+        <button onclick="clearResult('결과_광고')">삭제</button>
+        <div id="결과_광고" class="결과"></div>
+    </div>
+
+    <div id="제품" style="display: none;">
+        <h1>제품 판매 분석</h1>
+        <input type="number" id="판매가격" placeholder="판매가격">
+        <input type="number" id="구매가격" placeholder="구매가격">
+        <button onclick="calculateProductAnalysis()">계산</button>
+        <button onclick="clearResult('결과_제품')">삭제</button>
+        <div id="결과_제품" class="결과"></div>
+    </div>
+
+    <div id="마케팅투자" style="display: none;">
+        <h1>마케팅 투자 분석</h1>
+        <input type="number" id="매출" placeholder="매출">
+        <input type="number" id="매출원가" placeholder="매출 원가">
+        <input type="number" id="판매관리비" placeholder="판매 관리비">
+        <input type="number" id="마케팅투자액" placeholder="마케팅 투자액">
+        <button onclick="calculateROI('마케팅투자')">계산</button>
+        <button onclick="clearResult('결과_마케팅투자')">삭제</button>
+        <div id="결과_마케팅투자" class="결과"></div>
+    </div>
+
+    <div id="고객관리" style="display: none;">
+        <h1>고객 관리</h1>
+        <input type="text" id="고객정보" placeholder="고객 정보 입력">
+        <button onclick="suggestSolution()">솔루션 제시</button>
+        <button onclick="clearResult('결과_고객관리')">삭제</button>
+        <div id="결과_고객관리" class="결과"></div>
+    </div>
+
+    <script>
+        var 결과_광고 = [];
+        var 결과_제품 = [];
+        var 결과_마케팅투자 = [];
+        var 결과_고객관리 = [];
+
+        function checkLogin() {
+            var id = document.getElementById('id').value;
+            var password = document.getElementById('password').value;
+
+            if ((id === '류영종' || id === '이은지') && (password === '영종12' || password === '은지12' || password === '123')) {
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('main').style.display = 'block';
+            } else {
+                alert('로그인 실패. 다시 시도하세요.');
+            }
+        }
+
+        function toggleCategory(category) {
+            var categoryElement = document.getElementById(category);
+            var currentDisplayStyle = categoryElement.style.display;
+
+            if (currentDisplayStyle === 'none') {
+                // 현재 숨겨져 있으면 보이도록 변경
+                categoryElement.style.display = 'block';
+            } else {
+                // 현재 보이고 있으면 숨김으로 변경
+                categoryElement.style.display = 'none';
+            }
+        }
+
+        function calculateROAS(category) {
+            var 광고비용 = parseFloat(document.getElementById('광고비용').value);
+            var 광고수익 = parseFloat(document.getElementById('광고수익').value);
+
+            if (!isNaN(광고비용) && !isNaN(광고수익)) {
+                var roas = (광고수익 / 광고비용) * 100;
+                결과_광고.push('ROAS: ' + roas.toFixed(2) + '%');
+                document.getElementById('결과_광고').innerHTML = 결과_광고.join('<br>');
+            } else {
+                alert('올바른 값을 입력하세요.');
+            }
+        }
+
+        function calculateProductAnalysis() {
+            var 판매가격 = parseFloat(document.getElementById('판매가격').value);
+            var 구매가격 = parseFloat(document.getElementById('구매가격').value);
+
+            if (!isNaN(판매가격) && !isNaN(구매가격)) {
+                var 마진 = 판매가격 - 구매가격;
+                var 마진율 = ((판매가격 - 구매가격) / 판매가격) * 100;
+                var 판매가격_마진 = 구매가격 / (1 - 마진율 / 100);
+                var 부가세 = 판매가격 / 10;
+
+                결과_제품.push('마진: ' + 마진.toFixed(2) +
+                                '<br>마진율: ' + 마진율.toFixed(2) + '%' +
+                                '<br>판매가격(부가세 포함): ' + 판매가격_마진.toFixed(2) +
+                                '<br>부가세: ' + 부가세.toFixed(2));
+                document.getElementById('결과_제품').innerHTML = 결과_제품.join('<br>');
+            } else {
+                alert('올바른 값을 입력하세요.');
+            }
+        }
+
+        function calculateROI(category) {
+            var 매출 = parseFloat(document.getElementById('매출').value);
+            var 매출원가 = parseFloat(document.getElementById('매출원가').value);
+            var 판매관리비 = parseFloat(document.getElementById('판매관리비').value);
+            var 마케팅투자액 = parseFloat(document.getElementById('마케팅투자액').value);
+
+            if (!isNaN(매출) && !isNaN(매출원가) && !isNaN(판매관리비) && !isNaN(마케팅투자액)) {
+                var roi = ((매출 - 매출원가 - 판매관리비 - 마케팅투자액) / 마케팅투자액) * 100;
+                결과_마케팅투자.push('ROI: ' + roi.toFixed(2) + '%');
+                document.getElementById('결과_마케팅투자').innerHTML = 결과_마케팅투자.join('<br>');
+            } else {
+                alert('올바른 값을 입력하세요.');
+            }
+        }
+
+        function suggestSolution() {
+            var 고객정보 = document.getElementById('고객정보').value;
+
+            // 여기에 AI를 통한 솔루션 제시 로직을 추가하세요.
+
+            // 임시로 예시 메시지를 표시합니다.
+            결과_고객관리.push('AI를 통한 솔루션 제시: ' + 고객정보 + '에 대한 솔루션입니다.');
+            document.getElementById('결과_고객관리').innerHTML = 결과_고객관리.join('<br>');
+        }
+
+        function clearResult(resultId) {
+            // 해당 결과 창의 결과값을 초기화
+            document.getElementById(resultId).innerHTML = '';
+        }
+    </script>
+</body>
+</html>
